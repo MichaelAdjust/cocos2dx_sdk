@@ -1,122 +1,125 @@
-## Summary
+---
+layout: page
+title: adjust Android Cocos2dx SDK
+permalink: /ja/sdk/cocos2dx/android/
+locale: ja
+type: guide
+description: "こちらは、adjust™のCocos2d-x用SDKです。"
+---
 
-This is the Cocos2d-x SDK of adjust™. You can read more about adjust™ at
-adjust.com.
+こちらは、adjust™のCocos2d-x用SDKです。adjust™についての詳細は
+adjust.comをご覧ください。
 
-## Basic integration into Cocos2d-x Android project
+<section id='toc-section'></section>
 
-We will describe the steps to integrate the adjust SDK into your Cocos2d-x Android project.
+### Cocos2d-x Androidプロジェクトへの基本的な統合
 
-### 1. Get the SDK
+adjust のSDK をCocos2d-xのAndroidプロジェクトに統合するための手順を説明します。
 
-Download the latest version from our [releases page][releases]. Extract the
-archive into a directory of your choice.
+#### SDKの入手
 
-### 2. Add adjust source files to your project
+最新バージョンのSDKを[リリースページ][releases]からダウンロードし、アーカイブを任意のダイレクトリーに
+解凍してください。
 
-Take the files from the `Adjust` folder and add them to your Android project.
+#### adjustソースファイルのプロジェクトへの追加
+
+`Adjust`フォルダのファイルを保存し、Android プロジェクトに追加してください。
 
 ![][add_android_files]
 
-### 3. Add the adjust C++ source files to `Android.mk`
+#### adjust C++ソースファイルの`Android.mk`への追加
 
-Make sure to also add the paths of the adjust C++ files to the `LOCAL_SRC_FILES` section in your
-`Android.mk` file.
+`Android.mk`ファイルの`LOCAL_SRC_FILES`セクションに、adjust C++ファイルのパスを必ず追加してください。
 
 ![][add_to_android_mk]
 
-### 4. Add the adjust library to your project
+#### adjustライブラリのプロジェクトへの追加
 
-Take the `adjust-android.jar` library and copy it to your project's `libs` folder.
+`adjust-android.jar`ライブラリを保存し、プロジェクトの`libs`フォルダにコピーしてください。
 
 ![][add_android_jar]
 
-### 5. Add Google Play Services
+#### Google Play開発者サービスの追加
 
-Since the 1st of August of 2014, apps in the Google Play Store must use the
-[Google Advertising ID][google_ad_id] to uniquely identify devices. To allow
-the adjust SDK to use the Google Advertising ID, you must integrate the [Google
-Play Services][google_play_services]. If you haven't done this yet, follow
-these steps:
+2014年8月1日よりGoogle Playストアのアプリには、デバイスを一意に識別するための
+[Google 広告 ID][google_ad_id] の使用が義務付けられました。
+adjust SDKでGoogle 広告 IDを使用するには、[Google
+Play開発者サービス][google_play_services]を統合する必要があります。統合済みでない場合は、
+以下の手順に沿って設定して下さい。
 
-1. Copy the library project at
+1. 以下のパスのライブラリプロジェクトを、
+	
+	<pre>
+	&lt;android-sdk&gt;/extras/google/google_play_services/libproject/google-play-services_lib/
+	</pre>
 
-    ```
-    <android-sdk>/extras/google/google_play_services/libproject/google-play-services_lib/
-    ```
+	Androidアプリのプロジェクトの保存場所にコピーしてください。
 
-    to the location where you maintain your Android app projects.
+2. Eclipseワークスペースにライブラリプロジェクトをインポートします。`File >
+	Import`, select `Android > Existing Android Code into Workspace`の順にクリックし、
+	コピーしたライブラリプロジェクトを指定してインポートしてください。
 
-2. Import the library project into your Eclipse workspace. Click `File >
-   Import`, select `Android > Existing Android Code into Workspace`, and browse
-   to the copy of the library project to import it.
+3. アプリのプロジェクトで、Google Play開発者サービスのライブラリプロジェクトを参照してください。詳しい設定方法は、[Eclipseでのライブラリプロジェクトの参照について][eclipse_library] をご覧ください。
+	
+	参照先には、開発中のワークスペースへコピーしたライブラリを指定し、Android SDKダイレクトリー内のライブラリを直接参照しないようにしてください。
+     
 
-3. In your app project, reference Google Play services library project. See
-   [Referencing a Library Project for Eclipse][eclipse_library] for more
-   information on how to do this.
+4. アプリのプロジェクトが依存するライブラリとしてGoogle Play開発者サービス ライブラリを追加したら、
+アプリのマニフェスト ファイルを開き、[<application>][application] エレメントの子要素として次のタグを追加してください。
 
-     You should be referencing a copy of the library that you copied to your
-     development workspace. You should not reference the library directly from
-     the Android SDK directory.
+	<pre>
+	&lt;meta-data android:name="com.google.android.gms.version"
+	      android:value="@integer/google_play_services_version" /&gt;
+	</pre>
 
-4. After you've added the Google Play services library as a dependency for your app project,
-open your app's manifest file and add the following tag as a child of the `manifest` element:
+#### パーミッションの追加
 
-    ```xml
-    <meta-data android:name="com.google.android.gms.version"
-          android:value="@integer/google_play_services_version" />
-    ```
+Package ExplorerでAndroidプロジェクトの`AndroidManifest.xml`を開いて下さい。
+`INTERNET`の`uses-permission` タグが記述されていない場合は、追加してください。
 
-### 6. Add permissions
+<pre>
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+</pre>
 
-In the Package Explorer open the `AndroidManifest.xml` of your Android project.
-Add the `uses-permission` tag for `INTERNET` if it's not present already.
+Google Playストアでの配信を想定して*いない*場合は、代わりに以下のパーミッションを両方追加してください。
 
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-```
-
-If you are *not* targeting the Google Play Store, add both of these permissions instead:
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-```
+<pre>
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /&gt;
+</pre>
 
 ![][manifest_permissions]
 
-### 7. Add broadcast receiver
+#### ブロードキャスト レシーバの追加
 
-In your `AndroidManifest.xml` add the following `receiver` tag inside the
-`application` tag.
+`AndroidManifest.xml`ファイルの`application`タグの中に、以下の`receiver`タグを追加してください。
 
-```xml
-<receiver
+<pre>
+&lt;receiver
     android:name="com.adjust.sdk.AdjustReferrerReceiver"
-    android:exported="true" >
-    <intent-filter>
-        <action android:name="com.android.vending.INSTALL_REFERRER" />
-    </intent-filter>
-</receiver>
-```
+    android:exported="true" &gt;
+    &lt;intent-filter&gt;
+        &lt;action android:name="com.android.vending.INSTALL_REFERRER" /&gt;
+    &lt;/intent-filter&gt;
+&lt;/receiver>
+</pre>
 
 ![][receiver]
 
-We use this broadcast receiver to retrieve the install referrer, in order to
-improve conversion tracking.
+adjustはインストール リファラを取得するためにこのブロードキャスト レシーバを使用して
+コンバージョン トラッキングを改善しています。
 
-If you are already using a different broadcast receiver for the
-`INSTALL_REFERRER` intent, then follow [these instructions][referrer] to add the
-Adjust receiver.
+`INSTALL_REFERRER`インテントに対して、既に他のブロードキャスト レシーバを使用している場合は、
+[こちらの説明][referrer] の通りに
+adjustのレシーバを追加してください。
 
-### 8. Integrate Adjust into your app
+#### アプリへのAdjustの統合
 
-To start with, we'll set up basic session tracking.
+はじめに、基本的なセッション トラッキングの設定を行います。
 
-#### Basic Setup
+##### 基本設定
 
-In the Package Explorer, open the source file of your app delegate.  Add the import statement at the top of
-the file, then add the following call to Adjust in the `applicationDidFinishLaunching` of your app delegate:
+パッケージエクスプローラーで、アプリのデレゲートを開きます。ファイルの先頭にインポートステートメントを追加し、アプリのデレゲートに下記のadjustコールを`applicationDidFinishLaunching`に追加してください。   
 
 ```cpp
 #include "Adjust/Adjust2dx.h"
@@ -131,54 +134,56 @@ Adjust2dx::start(adjustConfig);
 
 ![][add_adjust2dx]
 
-Replace `{YourAppToken}` with your app token. You can find this in your
-[dashboard].
+`{YourAppToken}`とうい文字列はアプリのトークンと置き換えて下さい。トークンは
+[ダッシュボード]で確認することができます。
 
-Depending on whether you build your app for testing or for production, you must
-set `environment` with one of these values:
+アプリのビルドがテスト版か製品版かにより、
+`environment`に以下のいずれかの値を適宜設定してください。
 
-```cpp
+<pre>
 std::string environment = AdjustEnvironmentSandbox2dx;
 std::string environment = AdjustEnvironmentProduction2dx;
-```
+</pre>
 
-**Important:** This value should be set to `AdjustEnvironmentSandbox2dx` if and only
-if you or someone else is testing your app. Make sure to set the environment to
-`AdjustEnvironmentProduction2dx` just before you publish the app. Set it back to
-`AdjustEnvironmentSandbox2dx` when you start developing and testing it again.
+**重要:** アプリがテスト版の場合のみ、値を
+`AdjustEnvironmentSandbox2dx`に設定し、
+アプリの公開前に必ずこの値を`AdjustEnvironmentProduction2dx`に変更してください。
+再度開発やテストを行う際は、設定を`AdjustEnvironmentSandbox2dx`
+に戻してください。
 
-We use this environment to distinguish between real traffic and test traffic
-from test devices. It is very important that you keep this value meaningful at
-all times! This is especially important if you are tracking revenue.
+adjust ではこの設定により、トラフィックが実際のものなのか、テスト機から生じたものなのかを判別しています。
+この値を常に正しく設定することは非常に大切で、
+売上のトラッキングを行う際には特に重要となります。
 
-#### Adjust Logging
+##### Adjustのログ設定
 
-You can increase or decrease the amount of logs you see in tests by calling
-`setLogLevel` on your `AdjustConfig2dx` instance with one of the following
-parameters:
+`AdjustConfig`インスタンスで、以下のパラメータのいずれかを設定して`setLogLevel`関数を呼び出せば、
+テスト時に表示されるログの量を
+増減させることができます。
 
-```cpp
-adjustConfig.setLogLevel(AdjustLogLevel2dxVerbose); // enable all logging
-adjustConfig.setLogLevel(AdjustLogLevel2dxDebug);   // enable more logging
-adjustConfig.setLogLevel(AdjustLogLevel2dxInfo);    // the default
-adjustConfig.setLogLevel(AdjustLogLevel2dxWarn);    // disable info logging
-adjustConfig.setLogLevel(AdjustLogLevel2dxError);   // disable warnings as well
-adjustConfig.setLogLevel(AdjustLogLevel2dxAssert);  // disable errors as well
-```
+<pre>
+config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
+config.setLogLevel(LogLevel.DEBUG);     // enable more logging
+config.setLogLevel(LogLevel.INFO);      // the default
+config.setLogLevel(LogLevel.WARN);      // disable info logging
+config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
+config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
+</pre>
 
-### 9. Session tracking
+#### セッション計測
 
-To provide proper session tracking it is required to call certain Adjust
-methods every time app goes to background or comes to foreground. Otherwise the SDK 
-might miss a session start or session end. In order to do so you should follow these steps:
+セッションの トラッキングを適切に行うには、アクティビティが再開、または一時停止する度に必ず
+特定のadjustメソッドを呼び出す必要があります。
+そうしないと、SDKはセッションの開始とセッションの終了を取りこぼすことがあります。これを防ぐため、以下の手順で設定を行って下さい。
+**各アクティビティ**ごとに、各のステップを従ってください。
 
-1. Open the app delegate file.
-2. Add call to `onResume` method in `applicationWillEnterForeground` method.
-3. Add call to `onPause` method in `applicationDidEnterBackground` method.
+1. アクティビティのソースファイルを開いてください。
+2. `applicationWillEnterForeground`のメソッドにある`onResume`のメソッドにコールを追加します。
+3. `applicationDidEnterBackground`のメソッドにある`onPause`のメソッドにコールを追加します。
 
-After these steps your app delegate should look like this:
+以上の手順で設定したら、アクティビティのソースは以下のようになっているはずです。
 
-```cpp
+<pre>
 #include "Adjust/Adjust2dx.h"
 // ...
 
@@ -186,132 +191,131 @@ void AppDelegate::applicationDidEnterBackground() {
     // ...
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	Adjust2dx::onPause();
+    Adjust2dx::onPause();
 #endif
 }
 
 void AppDelegate::applicationWillEnterForeground() {
-	// ...
+    // ...
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-	Adjust2dx::onResume();
+    Adjust2dx::onResume();
 #endif
 }
 
 // ...
-```
+</pre>
 
-![][on_resume_on_pause]
+![][activity]
 
-### 10. Build your app
+#### アプリのビルド
 
-Build and run your Android app. In your LogCat viewer you can set the filter
-`tag:Adjust` to hide all other logs. After your app has launched you should see
-the following Adjust log: `Install tracked`
+Androidアプリをビルドし、実行します。LogCatビューアで
+`tag:Adjust`フィルタをセットすれば、他のログをすべて非表示にできます。アプリが起動すると、
+`Install tracked`というadjust のログを確認できるようになります。
 
 ![][log_message]
 
-## Additional features
+### 追加機能
 
-Once you integrate the adjust SDK into your project, you can take advantage of
-the following features.
+プロジェクトにadjust のSDKを統合すると、以下の
+機能を利用できるようになります。
 
-### 11. Set up event tracking
+#### カスタムイベントのトラッキングの追加
 
-You can use adjust to track events. You would create a new event token in your [dashboard],
-which has an associated event token - looking something like `abc123`. In your
-game you would then add the following lines to track the event you are interested in:
+adjustを使用してイベントをトラッキングすることができます。[ダッシュボード]で新しいイベントトークンを作成し、
+そこに`abc123`のようなイベントトークンを関連付けてください。
+そしてトラッキングを行いたいイベントに、次の文字列を追加してください。
 
-```cpp
+<pre>
 AdjustEvent2dx adjustEvent = AdjustEvent2dx("abc123");
 Adjust2dx::trackEvent(adjustEvent);
-```
+</pre>
 
-When this event is triggered, you should see `Event tracked` in the logs.
+このイベントインスタンスを使って事前に設定を行えば、更に詳細なトラッキングを行うことも可能です。
 
-The event instance can be used to configure the event further before tracking
-it.
+#### 売上のトラッキングの追加
 
-#### Track revenue
+広告のタップや
+アプリ内購入で売上が発生する場合は、売上情報をイベントと一緒にトラッキングすることができます。
+例えば、タップ1回で0.01ユーロの収入が発生する場合、次のように設定して売上イベントをトラッキングすることができます。
 
-If your users can generate revenue by tapping on advertisements or making
-in-app purchases, then you can track those revenues with events. Let's say a tap is
-worth one Euro cent. You could then track the revenue event like this:
-
-```cpp
+<pre>
 AdjustEvent2dx adjustEvent = AdjustEvent2dx("abc123");
 adjustEvent.setRevenue(0.01, "EUR");
 Adjust2dx::trackEvent(adjustEvent);
-```
+</pre>
 
-This can be combined with callback parameters of course.
+もちろん、このコードはコールバック パラメータと組み合わせることもできます。
 
-When you set a currency token, adjust will automatically convert the incoming revenues into a reporting 
-revenue of your choice. Read more about [currency conversion here.][currency-conversion]
+通貨トークンを設定した場合、adjustは売上高を自動的に為替計算し、任意の通貨で表示します。 
+詳細は[為替レートの計算][currency-conversion]ページをご覧ください。
 
-You can read more about revenue and event tracking in the [event tracking guide.][event-tracking]
+売上とイベントのトラッキングの詳細は、[イベントトラッキングについて][event-tracking]をご覧ください。
 
-#### Add callback parameters
 
-You can register a callback URL for your events in your [dashboard]. We will
-send a GET request to that URL whenever the event is tracked. You can add
-callback parameters to that event by calling `addCallbackParameter` on the
-event before tracking it. We will then append these parameters to your callback
-URL.
+##### コールバックパラメータの追加
 
-For example, suppose you have registered the URL
-`http://www.adjust.com/callback` then track an event like this:
+[ダッシュボード]でイベント追跡用のコールバックURLを設定することが可能で、
+イベントがトラッキングされる度に、そのURLへGETリクエストが送信されます。
+トラッキング前に、イベントインスタンスで`addCallbackParameter`　を呼び出して、そのイベント用のコールバックパラメーターを設定することができます。
+その後、設定されたパラメーターがコールバックURLに付け足されます。
 
-```cpp
+
+例えば、
+`http://www.adjust.com/callback`をコールバックURLとして登録し、イベントを次のようにトラッキングする場合、
+
+<pre>
 AdjustEvent2dx adjustEvent = AdjustEvent2dx("abc123");
 adjustEvent.addCallbackParameter("key", "value");
 adjustEvent.addCallbackParameter("foo", "bar");
 Adjust2dx::trackEvent(adjustEvent);
-```
+</pre>
 
-In that case we would track the event and send a request to:
+イベントがトラッキングされると、次のURLにリクエストが送信されます。
 
-    http://www.adjust.com/callback?key=value&foo=bar
+<pre>
+http://www.adjust.com/callback?key=value&foo=bar
+</pre>
 
-It should be mentioned that we support a variety of placeholders like `{android_id}`, which can be used as parameter values. In the resulting callback this placeholder would be replaced with the AndroidID of the current
-device. Also note that we don't store any of your custom parameters, but only
-append them to your callbacks. If you haven't registered a callback for an
-event, these parameters won't even be read.
+注目すべき機能として、adjustでは`{android_id}`といった、パラメータ値として利用できる様々なプレースホルダに対応しています。
+実際に生成されるコールバックでは、この
+プレースホルダはデバイスのAndroidIDで置き換えられることになります。
+また、adjust ではカスタムパラメータはコールバックに付加されるだけで、
+一切保存されませんのでご注意下さい。イベントにコールバックを登録していなければ、
+これらのパラメータは読み込まれることすらありません。
 
-You can read more about using URL callbacks, including a full list of available
-values, in our [callbacks guide][callbacks-guide].
+URLコールバックの使い方については、
+[コールバックについて][callbacks-guide]のページで、使用可能な値を網羅したリストと一緒に、詳しく紹介しています。
 
-#### Partner parameters
+##### パートナー パラメータ
 
-You can also add parameters to be transmitted to network partners for
-integrations that have been activated in your adjust dashboard.
+ダッシュボードでトラッキングデータを共有するよう設定したネットワーク パートナーに対し、送信されるパラメータを追加することもできます。
 
-This works similarly to the callback parameters mentioned above, but can
-be added by calling the `addPartnerParameter` method on your `AdjustEvent2dx`
-instance.
 
-```cpp
+これは、上記のコールバック パラメータと同様の働きを持つもので、
+`AdjustEvent2dx`インスタンスで`addPartnerParameter`メソッドを呼び出せば追加することができます。
+
+<pre>
 AdjustEvent2dx adjustEvent = AdjustEvent2dx("abc123");
 adjustEvent.addPartnerParameter("foo", "bar");
 Adjust2dx::trackEvent(adjustEvent);
-```
+</pre>
 
-You can read more about special partners and these integrations in our
-[guide to special partners.][special-partners]
+スペシャルパートナーとその統合については、
+[スペシャルパートナーについて][special-partners]のページをご覧ください。
 
-### 12. Set up deep link reattributions
+#### ディープリンク　リアトリビューションの設定
 
-You can set up the adjust SDK to handle deep links that are used to open your
-app via a custom URL scheme. We will only read certain adjust specific
-parameters. This is essential if you are planning to run retargeting or
-re-engagement campaigns with deep links.
+adjust のSDKをディープリンクに対応するよう設定して、カスタムURLからアプリが開かれた際にトラッキングを行うことができます。
+adjustでは、adjust専用のパラメータだけを読み込みます。
+ディープリンクを使ったリターゲッティングやリエンゲージメントキャンペーンを計画している場合、この設定は必須となります。
 
-For each activity that accepts deep links, find the `onCreate` or `onNewIntent` 
-method and add the following call to adjust:
+ディープリンクに対応しているアクティビティごとに、`onCreate`メソッドまたは`onNewIntent`メソッドに以下の通りadjustへの呼び出しを設定します。
 
-##### For activities with `standard` launch mode
+##### `Standard`起動モードの場合
 
-```java
+<pre>
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
@@ -320,11 +324,11 @@ protected void onCreate(Bundle savedInstanceState) {
     Adjust.appWillOpenUrl(data);
     // ...
 }
-```
+</pre>
 
-##### For activities with `singleTop` launch mode
+##### `singleTop`起動モードの場合
 
-```java
+<pre>
 protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
@@ -332,110 +336,109 @@ protected void onNewIntent(Intent intent) {
     Adjust.appWillOpenUrl(data);
     // ...
 }
-```
+</pre>
 
-You can read more about activity launch mode on this [page][google-launch-modes].
-You can read more about [deeplinking in our docs][deeplinking].
+詳細は[ディープリンクについて][deeplinking]の説明を参照してください。
 
-### 13. Enable event buffering
+#### イベントのバッファリングの有効化
 
-If your app makes heavy use of event tracking, you might want to delay some
-HTTP requests in order to send them in one batch every minute. You can enable
-event buffering with your `AdjustConfig2dx` instance:
+アプリでイベント トラッキングが頻繁に発生する場合、
+一部のHTTPリクエストを遅らせておいて、1分ごとに一括送信した方がよいことがあります。
+その場合は、`AdjustConfig`インスタンスでイベント バッファリングを有効にしてください。
 
-```cpp
-adjustConfig.setEventBufferingEnabled(true);
-```
+<pre>
+config.setEventBufferingEnabled(true);
+</pre>
 
-### 14. Implement the attribution callback
+#### アトリビューションの変化を通知するリスナの設定
 
-You can register a delegate callback to be notified of tracker attribution
-changes. Due to the different sources considered for attribution, this
-information can not be provided synchronously. Follow these steps to implement
-the optional delegate protocol in your app delegate:
+トラッカーがアトリビューションの変化を検出した際に通知を受け取れるよう、リスナを登録することができます。
+アトリビューションのソースを比較しなければいけないため、
+変化の発生時に通知を行うことは出来ません。最も簡単な方法で設定するには、単一の匿名リスナを作成してください。
 
-Please make sure to consider our [applicable attribution data
-policies.][attribution-data]
 
-1. Open `AppDelegate.cpp` and add the following delegate callback function to
-   your app delegate implementation.
+また、adjustの[アトリビューションデータの適切な利用に関する
+方針][attribution-data]を必ず参照してください。
 
-    ```cpp
-    void attributionCallbackMethod(AdjustAttribution2dx attribution) {
-    }
-    ```
+SDKを開始する前に、`AdjustConfig`インスタンスで以下の通り匿名リスナを追加してください。
 
-2. Set the delegate with your `AdjustConfig2dx` instance:
 
-    ```cpp
-    adjustConfig.setAttributionCallback(attributionCallbackMethod);
-    ```
+
+1. `AppDelegate.cpp`を開き、下記のデレゲートコールバック昨日をアプリデレゲートに追加します。
+
+<pre>
+cpp
+void attributionCallbackMethod(AdjustAttribution2dx attribution) {
+}
+</pre>
+
+2. `AdjustConfig2dx`のインスタンスにてデレゲートを設定：
+
+<pre>
+cpp
+adjustConfig.setAttributionCallback(attributionCallbackMethod);
+</pre>
     
-As the delegate callback is configured using the `AdjustConfig2dx` instance, you
-should call `setAttributionCallback` before calling `Adjust2dx::start(adjustConfig)`.
+デレゲートコールバックが`AdjustConfig2dx`のインスタンスで設定しているため、`Adjust2dx::start(adjustConfig)`を呼び出す前に、`setAttributionCallback`を呼び出してください。
 
-The delegate function will be called when the SDK receives final attribution data.
-Within the delegate function you have access to the `attribution` parameter.
-Here is a quick summary of its properties:
+このリスナ関数は、SDKが最後のアトリビューション情報を取得した際に呼び出されます。
+呼び出されたリスナ関数内には`attribution`パラメータが含まれており、アトリビューションの種類を確認することができます。
+以下に、このパラメータのプロパティを簡単にまとめました。
 
-- `std::string trackerToken` the tracker token of the current install.
-- `std::string trackerName` the tracker name of the current install.
-- `std::string network` the network grouping level of the current install.
-- `std::string campaign` the campaign grouping level of the current install.
-- `std::string adgroup` the ad group grouping level of the current install.
-- `std::string creative` the creative grouping level of the current install.
-- `std::string clickLabel` the click label of the current install.
+- `String trackerToken` 発生したインストールのトラッカー トークン。
+- `String trackerName` 発生したインストールのトラッカー名。
+- `String network` 発生したインストールのネットワーク階層のグループ名。
+- `String campaign` 発生したインストールのキャンペーン階層のグループ名。
+- `String adgroup` 発生したインストールの広告グループ階層のグループ名。
+- `String creative` 発生したインストールのクリエイティブ階層のグループ名。
+- `String clickLabel` 発生したインストールのクリック ラベル。
 
-### 15. Disable tracking
+#### トラッキングの無効化
 
-You can disable the adjust SDK from tracking any activities of the current
-device by calling `setEnabled` with parameter `false`. This setting is remembered
-between sessions, but it can only be activated after the first session.
+adjustSDKが行っているデバイスのアクティビティのトラッキングをすべて無効化することができます。
+そのためには、`false`パラメータをセットして`setEnabled`関数を呼び出します。この設定はセッションが進んでも
+維持されます。
 
-```objc
-Adjust2dx::setEnabled(false);
-```
+### オフラインモード
 
-You can check if the adjust SDK is currently enabled by calling the function
-`isEnabled`. It is always possible to activate the adjust SDK by invoking
-`setEnabled` with the enabled parameter as `true`.
+一旦adjustサーバまでの送信を停止スルことができます。すると、すべての数値がファイルで保存されますので、たくさんのイベントを発生しないようにご注意ください。
 
-### 16. Offline mode
-
-You can put the adjust SDK in offline mode to suspend transmission to our servers while retaining tracked data to be sent later. While in offline mode, all information is saved
-in a file, so be careful not to trigger too many events while in offline mode.
-
-You can activate offline mode by calling `setOfflineMode` with the parameter `true`.
+`true`というパラメータで`setOfflineMode`を呼び出すことでオフラインモードを利用できます。
 
 ```objc
 Adjust2dx::setOfflineMode(true);
 ```
 
-Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`.
-When the adjust SDK is put back in online mode, all saved information is send to our servers 
-with the correct time information.
+また、`false`パラメータで`setOfflineMode`を呼び出すとオンラインになります。すると、すべてのデータが正しいタイムスタンプと一緒に弊社のサーバへ送信されます。
 
-Unlike disabling tracking, this setting is *not remembered*
-bettween sessions. This means that the SDK is in online mode whenever it is started,
-even if the app was terminated in offline mode.
+トラッキングの無効化と違って、こちらの設定は起動旅にリセットしますので、オフラインモードの状態でアプリを終了しても、再起動するとオンラインモードとしてアプリが起動します。
+
+<pre>
+Adjust.setEnabled(false);
+</pre>
+
+`isEnabled`関数を呼び出せば、adjust のSDKが現在有効かどうかを確認できます。
+また、`true`パラメータをセットして`setEnabled`関数を呼び出せば、いつでもadjust のSDKを
+有効化することができます。
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/cocos2dx_sdk/releases
-[add_android_files]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/add_android_files.png
-[add_android_jar]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/add_android_jar.png
-[add_to_android_mk]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/add_to_android_mk.png
-[manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/manifest_permissions.png
-[receiver]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/receiver.png
-[add_adjust2dx]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/add_adjust2dx.png
-[on_resume_on_pause]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/on_resume_on_pause.png
-[log_message]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/4.1.0/log_message.png
+[add_android_files]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/add_android_files.png
+[add_android_jar]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/add_android_jar.png
+[add_to_android_mk]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/add_to_android_mk.png
+[manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/manifest_permissions.png
+[receiver]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/receiver.png
+[application_class]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/application_class.pngmanifest_application]: 
+[manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/manifest_application.png
+[application_config]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/application_config.png
+[activity]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/activity.png
+[log_message]: https://raw.github.com/adjust/sdks/master/Resources/cocos2dx/android/log_message.png
 
 [referrer]:             https://github.com/adjust/android_sdk/blob/master/doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[eclipse_library]:	http://developer.android.com/tools/projects/projects-eclipse.html#ReferencingLibraryProject
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
 [android_application]:  http://developer.android.com/reference/android/app/Application.html
-[application_name]:     http://developer.android.com/guide/topics/manifest/application-element.html#nm
+[application_name]:http://developer.android.com/guide/topics/manifest/application-element.htmlnm
 [google_ad_id]:         https://developer.android.com/google/play-services/id.html
 [callbacks-guide]:      https://docs.adjust.com/en/callbacks
 [event-tracking]:       https://docs.adjust.com/en/event-tracking
@@ -443,31 +446,6 @@ even if the app was terminated in offline mode.
 [multidex]:             https://developer.android.com/tools/building/multidex.html
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
-[currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
-[deeplinking]:          https://docs.adjust.com/en/tracker-generation/#deeplinking
-[google-launch-modes]:  http://developer.android.com/guide/topics/manifest/activity-element.html#lmode
-
-## License
-
-The adjust SDK is licensed under the MIT License.
-
-Copyright (c) 2012-2015 adjust GmbH,
-http://www.adjust.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+[currency-conversion]:  https://docs.adjust.com/en/event-tracking/tracking-purchases-in-different-currencies
+[deeplinking]: https://docs.adjust.com/en/tracker-generation/deeplinking
+[eclipse_library]:	http://developer.android.com/tools/projects/projects-eclipse.html#ReferencingLibraryProject
